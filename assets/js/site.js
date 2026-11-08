@@ -24,3 +24,18 @@
     el.value = window.location.href;
   });
 })();
+
+// FormSubmit's _next redirect has the same cross-domain trap as _url above: a
+// hardcoded absolute URL points at whichever host the template was authored
+// on, so a submission from any other deployment (production vs preview)
+// bounces the visitor to the wrong site after they submit. Rebuild it from the
+// submitting page's own origin; the hardcoded value stays as the no-JS
+// fallback. data-thanks holds the site-root-relative thanks path.
+(function () {
+  document.querySelectorAll('form .js-form-next').forEach(function (el) {
+    var root = window.location.pathname
+      .replace(/index\.html?$/, '')
+      .replace(/[^/]+\/?$/, '');
+    el.value = window.location.origin + root + el.getAttribute('data-thanks');
+  });
+})();
